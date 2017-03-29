@@ -1,0 +1,17 @@
+{
+  "name": "koa-md",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.2.0",
+    "marked": "^0.3.6",
+    "mz": "^2.6.0"
+  }
+}
