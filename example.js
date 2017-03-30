@@ -1,5 +1,5 @@
 const Koa = require('koa');
-const md = require('./md');
+const md = require('./index');
 
 const app = new Koa();
 const port = 3000;

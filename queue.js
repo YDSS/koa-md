@@ -7,26 +7,46 @@ class Queue {
      * @param {number} max size
      */
     constructor(maxSize) {
-        this.queue = [];
+        this.queue = new Map();
         this.maxSize = maxSize;
-        this.cursor = 0;
     }
 
     /**
-     * @param {Object} 
+     * @param {String} key
+     * @param {} val
      */
-    push(item) {
-        this.cursor += 1;
-
-        if (this.cursor >  this.maxSize - 1) {
-            this.cursor = 0;
-            delete this.queue[this.cursor];
+    push(key, val) {
+        /**
+         * if the queue is full, pop the one first in
+         */
+        if (this.queue.size >  this.maxSize - 1) {
+            let popKey = this.getPopItemKey();
+            this.queue.delete(popKey);
         }
-        
-        this.queue[this.cursor] = item;
+
+        this.queue.set(key, val);
+    }
+
+    get(key) {
+        return this.queue.get(key);
+    }
+
+    /**
+     * the first insert item always pop
+     * @return {[type]} [description]
+     */
+    getPopItemKey() {
+        let keys = this.queue.keys();
+        return keys[0] || '';
     }
 
     clean() {
-        this.queue = [];
+        this.queue = new Map();
+    }
+
+    size() {
+        return this.queue.size;
     }
 }
+
+module.exports = Queue;

@@ -13,10 +13,13 @@ const marked = require('marked');
 // marked.setOptions({
 //
 // })
+const CacheManager = require('./cache');
+debugger
+let cacheManager = CacheManager.getInstance();
 
 const DEFAULT_DIR = '/markdown';
 
-export default md;
+module.exports = md;
 
 /**
  * md
@@ -61,6 +64,7 @@ async function md(ctx, path, opts = {}) {
     }
     let raw = await fs.readFile(path);
     let html = md2html(raw.toString());
+    cacheManager.put(ctx.request.path, html);
 
     ctx.set('Content-Length', html.length);
     ctx.type = type(path);

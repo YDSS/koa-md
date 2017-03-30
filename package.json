@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "node example.js",
+    "debug": "node --inspector example.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
