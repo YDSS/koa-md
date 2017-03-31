@@ -11,3 +11,7 @@ for (let i = 0; i < 12; i++) {
 }
 
 console.log(cacheManager.size());
+
+cacheManager = CacheManager.getInstance();
+
+console.log(cacheManager.get(0));

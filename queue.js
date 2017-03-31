@@ -2,6 +2,8 @@
  * @file queue, data structure implement, FIFO
  */
 
+const debug = require('debug')('queue');
+
 class Queue {
     /**
      * @param {number} max size
@@ -21,6 +23,7 @@ class Queue {
          */
         if (this.queue.size >  this.maxSize - 1) {
             let popKey = this.getPopItemKey();
+            debug(`pop key: ${popKey}`);
             this.queue.delete(popKey);
         }
 
@@ -37,7 +40,13 @@ class Queue {
      */
     getPopItemKey() {
         let keys = this.queue.keys();
-        return keys[0] || '';
+        let queueHead = keys.next();
+
+        if (queueHead) {
+            return queueHead.value;
+        }
+
+        return null;
     }
 
     clean() {

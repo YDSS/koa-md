@@ -3,6 +3,7 @@
  */
 
 const Queue = require('./queue');
+const debug = require('debug')('cache');
 
 class CacheManager {
 
@@ -12,6 +13,7 @@ class CacheManager {
 
     static getInstance(maxSize) {
         if (!this.mInstance) {
+            debug('new instance');
             this.mInstance = new Cache(maxSize);
         }
 
@@ -42,10 +44,13 @@ class Cache {
     }
 
     put(key, val) {
+        debug(`put key: ${key}, val: ${val}`);
+        debug(`size: ${this.size()}`)
         this.cache.push(key, val);
     }
 
     get(key) {
+        debug(`key has val: ${this.cache.get(key)}`);
         return this.cache.get(key);
     }
 

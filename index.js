@@ -10,11 +10,11 @@ const {
 } = require('path');
 
 const marked = require('marked');
+const debug = require('debug')('md');
 // marked.setOptions({
 //
 // })
 const CacheManager = require('./cache');
-debugger
 let cacheManager = CacheManager.getInstance();
 
 const DEFAULT_DIR = '/markdown';
@@ -34,7 +34,6 @@ async function md(ctx, path, opts = {}) {
     /**
      * 解析path
      */
-     debugger
     let root = opts.root ? normalize(resolve(opts.root)) : join(__dirname, DEFAULT_DIR);
     if (!isAbsolute(root)) {
         throw new TypeError('opts.root must be an absolute path');
@@ -46,29 +45,44 @@ async function md(ctx, path, opts = {}) {
     if (-1 == path) return ctx.throw('failed to decode', 400);
 
     path = join(root, path);
+
+    let content = '';
+    /**
+     * hit cache
+     */
+    let cached = cacheManager.get(path);
+    if (cached != null) {
+        debug('hit cache');
+        debug(`content: ${cached}`);
+        content = cached;
+    }
     /**
      * 读文件
      */
-    let stats;
-    try {
-        stats = await fs.stat(path);
-        if (stats.isDirectory()) {
-            return;
+    else {
+        let stats;
+        try {
+            stats = await fs.stat(path);
+            if (stats.isDirectory()) {
+                return;
+            }
         }
+        catch (err) {
+            const notfound = ['ENOENT', 'ENAMETOOLONG', 'ENOTDIR'];
+            if (~notfound.indexOf(err.code)) return;
+            err.status = 500;
+            throw err;
+        }
+        let raw = await fs.readFile(path);
+        content = md2html(raw.toString());
+        debug('read disk');
+        cacheManager.put(path, content);
+        debug(`cache size: ${cacheManager.size()}`);
     }
-    catch (err) {
-        const notfound = ['ENOENT', 'ENAMETOOLONG', 'ENOTDIR'];
-        if (~notfound.indexOf(err.code)) return;
-        err.status = 500;
-        throw err;
-    }
-    let raw = await fs.readFile(path);
-    let html = md2html(raw.toString());
-    cacheManager.put(ctx.request.path, html);
 
-    ctx.set('Content-Length', html.length);
-    ctx.type = type(path);
-    ctx.body = html;
+    ctx.set('Content-Length', content.length);
+    ctx.type = opts.resType || 'md';
+    ctx.body = content;
 }
 
 /**
@@ -77,13 +91,6 @@ async function md(ctx, path, opts = {}) {
  */
 function md2html(raw) {
     return marked(raw);
-}
-/**
- * File type.
- */
-
-function type(file) {
-  return extname(basename(file, '.gz'));
 }
 
 /**
