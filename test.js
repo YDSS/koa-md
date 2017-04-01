@@ -2,16 +2,16 @@
  * test
  */
 
-const CacheManager = require('./cache');
+const Cache = require('./cache');
 
-let cacheManager = CacheManager.getInstance(10);
+let cache = Cache.getInstance(10);
 
 for (let i = 0; i < 12; i++) {
-    cacheManager.put(i, 1);
+    cache.put(i, 1);
 }
 
-console.log(cacheManager.size());
+console.log(cache.size());
 
-cacheManager = CacheManager.getInstance();
+cache = Cache.getInstance();
 
-console.log(cacheManager.get(0));
+console.log(cache.get(0));

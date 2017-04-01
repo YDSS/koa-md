@@ -2,26 +2,10 @@
  * @file cache manager
  */
 
-const Queue = require('./queue');
 const debug = require('debug')('cache');
 
-class CacheManager {
-
-    constructor() {
-        throw new Error('singleton');
-    }
-
-    static getInstance(maxSize) {
-        if (!this.mInstance) {
-            debug('new instance');
-            this.mInstance = new Cache(maxSize);
-        }
-
-        return this.mInstance;
-    }
-}
-
-module.exports = CacheManager;
+const Queue = require('./queue');
+const Singleton = require('./singleton');
 
 class Cache {
 
@@ -58,3 +42,6 @@ class Cache {
         return this.cache.size();
     }
 }
+
+const CacheSingleton = new Singleton(Cache);
+module.exports = CacheSingleton;

@@ -14,8 +14,8 @@ const debug = require('debug')('md');
 // marked.setOptions({
 //
 // })
-const CacheManager = require('./cache');
-let cacheManager = CacheManager.getInstance();
+const Cache = require('./utils/cache');
+let cache;
 
 const DEFAULT_DIR = '/markdown';
 
@@ -46,11 +46,15 @@ async function md(ctx, path, opts = {}) {
 
     path = join(root, path);
 
+    /**
+     * init cache
+     */
+    cache = Cache.getInstance(opts.maxSize || 100);
     let content = '';
     /**
      * hit cache
      */
-    let cached = cacheManager.get(path);
+    let cached = cache.get(path);
     if (cached != null) {
         debug('hit cache');
         debug(`content: ${cached}`);
@@ -76,8 +80,8 @@ async function md(ctx, path, opts = {}) {
         let raw = await fs.readFile(path);
         content = md2html(raw.toString());
         debug('read disk');
-        cacheManager.put(path, content);
-        debug(`cache size: ${cacheManager.size()}`);
+        cache.put(path, content);
+        debug(`cache size: ${cache.size()}`);
     }
 
     ctx.set('Content-Length', content.length);
